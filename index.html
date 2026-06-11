@@ -42,16 +42,31 @@ Waiting to start
 
 <section class="actions">
 
-<button id="startBtn" class="success">
+<label>
 Start Work
+<input type="time" id="startTime">
+</label>
+
+<label>
+Break Start
+<input type="time" id="breakStart">
+</label>
+
+<label>
+Break End
+<input type="time" id="breakEnd">
+</label>
+
+<button id="startNowBtn" class="success">
+Start Work Now
 </button>
 
-<button id="breakBtn" class="warning">
-Start Break
+<button id="breakNowBtn" class="warning">
+Break Now
 </button>
 
-<button id="resumeBtn" class="primary">
-End Break
+<button id="resumeNowBtn" class="primary">
+Resume Now
 </button>
 
 <button id="resetBtn" class="danger">
