@@ -107,17 +107,38 @@ function calculate() {
     }
 
     const finishDate =
+    document.getElementById(
+    "calculationText"
+    ).innerHTML =
+
+    `${startValue} start<br>
+    + ${workHours}h target<br>
+    + ${Math.round(breakMinutes)}m break<br><br>
+    = ${finishDate.toLocaleTimeString(
+    "en-AU",
+    {
+    hour:"numeric",
+    minute:"2-digit",
+    hour12:true
+    }
+    )}`;
         new Date(
             start.getTime()
             + workHours * 3600000
             + breakMinutes * 60000
         );
 
+        
+
     finishTime.textContent =
-        finishDate.toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit"
-        });
+    finishDate.toLocaleTimeString(
+        "en-AU",
+        {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true
+        }
+    );
 
     let workedHours = 0;
 
@@ -136,6 +157,36 @@ function calculate() {
         workedHours.toFixed(2)
         + " hrs worked";
 
+    const workedMinutes =
+    Math.max(
+    0,
+    Math.round(workedHours * 60)
+    );
+
+    const remainingMinutes =
+    Math.max(
+    0,
+    Math.round(
+    (workHours * 60)
+    - workedMinutes
+    )
+    );
+
+    document.getElementById(
+    "workedHours"
+    ).textContent =
+    `${Math.floor(workedMinutes/60)}h ${workedMinutes%60}m`;
+
+    document.getElementById(
+    "breakDisplay"
+    ).textContent =
+    `${Math.round(breakMinutes)}m`;
+
+    document.getElementById(
+    "remainingDisplay"
+    ).textContent =
+    `${Math.floor(remainingMinutes/60)}h ${remainingMinutes%60}m`;
+        
     const progress =
         Math.max(
             0,
@@ -153,7 +204,16 @@ function calculate() {
     document
         .getElementById("progressText")
         .textContent =
-        progress.toFixed(0) + "%";
+        `${progress.toFixed(0)}% Complete`;
+
+    if(progress >= 100){
+
+    finishTime.textContent =
+    "🎉 DONE";
+
+    workedToday.textContent =
+    "You've completed your day";
+}
 }
 
 [
