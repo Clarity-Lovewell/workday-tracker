@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<title>Work Day Tracker</title>
+
+<link rel="manifest" href="manifest.json">
+
+<meta name="theme-color" content="#0f172a">
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+<h1>Work Day Tracker</h1>
+<button id="settingsBtn">⚙️</button>
+</header>
+
+<section class="hero">
+
+<div class="label">
+Finish At
+</div>
+
+<div id="finishTime" class="finish-time">
+--:--
+</div>
+
+<div id="workedToday" class="subtext">
+Waiting to start
+</div>
+
+</section>
+
+<section class="actions">
+
+<button id="startBtn" class="success">
+Start Work
+</button>
+
+<button id="breakBtn" class="warning">
+Start Break
+</button>
+
+<button id="resumeBtn" class="primary">
+End Break
+</button>
+
+<button id="resetBtn" class="danger">
+Reset Day
+</button>
+
+</section>
+
+<section class="progress-card">
+
+<div class="progress-header">
+Day Progress
+</div>
+
+<div class="progress-bar">
+<div id="progressFill"></div>
+</div>
+
+<div id="progressText">
+0%
+</div>
+
+</section>
+
+<div id="settingsPanel" class="settings hidden">
+
+<h2>Settings</h2>
+
+<label>
+Full Work Day (Hours)
+<input
+type="number"
+step="0.5"
+id="dailyHours">
+</label>
+
+<button id="saveSettings">
+Save
+</button>
+
+</div>
+
+</div>
+
+<script src="app.js"></script>
+
+</body>
+</html>
