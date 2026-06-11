@@ -1,69 +1,171 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <title>Work Day Tracker</title>
 
-<link rel="manifest" href="manifest.json">
+<style>
 
-<meta name="theme-color" content="#0f172a">
+body{
+font-family:Arial,sans-serif;
+background:#111827;
+color:white;
+margin:0;
+padding:15px;
+}
 
-<link rel="stylesheet" href="styles.css">
+.card{
+background:#1f2937;
+border-radius:15px;
+padding:20px;
+margin-bottom:15px;
+}
+
+h1{
+text-align:center;
+margin-top:0;
+}
+
+.leave{
+font-size:48px;
+font-weight:bold;
+text-align:center;
+color:#60a5fa;
+margin:15px 0;
+}
+
+.label{
+text-align:center;
+opacity:.7;
+}
+
+.stats{
+display:grid;
+grid-template-columns:1fr 1fr 1fr;
+gap:10px;
+margin-top:20px;
+}
+
+.stat{
+background:#374151;
+padding:10px;
+border-radius:10px;
+text-align:center;
+}
+
+.stat-title{
+font-size:12px;
+opacity:.7;
+}
+
+.stat-value{
+font-size:18px;
+margin-top:5px;
+}
+
+label{
+display:block;
+margin-bottom:15px;
+}
+
+input{
+width:100%;
+padding:12px;
+margin-top:5px;
+border:none;
+border-radius:10px;
+font-size:16px;
+}
+
+button{
+width:100%;
+padding:14px;
+border:none;
+border-radius:10px;
+margin-bottom:10px;
+font-size:16px;
+font-weight:bold;
+color:white;
+}
+
+.green{background:#16a34a;}
+.orange{background:#ea580c;}
+.blue{background:#2563eb;}
+.red{background:#dc2626;}
+
+.progress{
+height:25px;
+background:#374151;
+border-radius:999px;
+overflow:hidden;
+margin-top:10px;
+}
+
+.fill{
+height:100%;
+width:0%;
+background:#60a5fa;
+}
+
+.calc{
+line-height:1.8;
+}
+
+</style>
 </head>
 
 <body>
 
-<div class="app">
-
-<header>
 <h1>Work Day Tracker</h1>
-<button id="settingsBtn">⚙️</button>
-</header>
 
-<section class="hero">
+<div class="card">
 
 <div class="label">
 YOU LEAVE AT
 </div>
 
-<div id="finishTime" class="finish-time">
+<div class="leave" id="finishTime">
 --:--
 </div>
 
-<div id="workedToday" class="subtext">
-Waiting to start
+<div style="text-align:center" id="status">
+Enter a start time
 </div>
 
 <div class="stats">
 
 <div class="stat">
-<div class="stat-label">Worked</div>
-<div id="workedHours">0h 0m</div>
+<div class="stat-title">Worked</div>
+<div class="stat-value" id="worked">
+0h 0m
+</div>
 </div>
 
 <div class="stat">
-<div class="stat-label">Break</div>
-<div id="breakDisplay">0m</div>
+<div class="stat-title">Break</div>
+<div class="stat-value" id="break">
+0m
+</div>
 </div>
 
 <div class="stat">
-<div class="stat-label">Remaining</div>
-<div id="remainingDisplay">0h 0m</div>
+<div class="stat-title">Remaining</div>
+<div class="stat-value" id="remaining">
+0h 0m
+</div>
 </div>
 
 </div>
 
-</section>
+</div>
 
-<section class="actions">
+<div class="card">
 
 <label>
 Start Work
-<input type="time" id="startTime">
+<input type="time" id="start">
 </label>
 
 <label>
@@ -76,71 +178,281 @@ Break End
 <input type="time" id="breakEnd">
 </label>
 
-<button id="startNowBtn" class="success">
+<label>
+Work Day Hours
+<input type="number" id="hours" step="0.5">
+</label>
+
+<button class="green" onclick="setNow('start')">
 Start Work Now
 </button>
 
-<button id="breakNowBtn" class="warning">
+<button class="orange" onclick="setNow('breakStart')">
 Break Now
 </button>
 
-<button id="resumeNowBtn" class="primary">
+<button class="blue" onclick="setNow('breakEnd')">
 Resume Now
 </button>
 
-<button id="resetBtn" class="danger">
+<button class="red" onclick="resetDay()">
 Reset Day
 </button>
 
-</section>
-
-<section class="progress-card">
-
-<section class="progress-card">
-
-<h3>Calculation</h3>
-
-<div id="calculationText">
-Waiting for start time
 </div>
 
-</section>
+<div class="card">
 
-<div class="progress-header">
-Day Progress
-</div>
+<b>Progress</b>
 
-<div class="progress-bar">
-<div id="progressFill"></div>
+<div class="progress">
+<div class="fill" id="fill"></div>
 </div>
 
 <div id="progressText">
 0%
 </div>
 
-</section>
+</div>
 
-<div id="settingsPanel" class="settings hidden">
+<div class="card">
 
-<h2>Settings</h2>
+<b>Calculation</b>
 
-<label>
-Full Work Day (Hours)
-<input
-type="number"
-step="0.5"
-id="dailyHours">
-</label>
-
-<button id="saveSettings">
-Save
-</button>
-
+<div class="calc" id="calc">
+Waiting for start time
 </div>
 
 </div>
 
-<script src="app.js"></script>
+<script>
+
+function save(){
+
+localStorage.setItem(
+"tracker",
+JSON.stringify({
+start:start.value,
+breakStart:breakStart.value,
+breakEnd:breakEnd.value,
+hours:hours.value
+})
+);
+
+}
+
+function load(){
+
+const d=
+JSON.parse(
+localStorage.getItem("tracker")
+);
+
+if(!d)return;
+
+start.value=d.start||"";
+breakStart.value=d.breakStart||"";
+breakEnd.value=d.breakEnd||"";
+hours.value=d.hours||"7.5";
+
+}
+
+function setNow(id){
+
+document.getElementById(id).value=
+new Date()
+.toLocaleTimeString(
+'en-GB',
+{
+hour:'2-digit',
+minute:'2-digit'
+}
+);
+
+save();
+calculate();
+
+}
+
+function resetDay(){
+
+start.value="";
+breakStart.value="";
+breakEnd.value="";
+
+save();
+calculate();
+
+}
+
+function format12(date){
+
+return date.toLocaleTimeString(
+'en-AU',
+{
+hour:'numeric',
+minute:'2-digit',
+hour12:true
+}
+);
+
+}
+
+function calculate(){
+
+save();
+
+if(!start.value){
+
+finishTime.textContent="--:--";
+
+status.textContent=
+"Enter a start time";
+
+return;
+}
+
+const target=
+parseFloat(hours.value||7.5);
+
+const today=new Date();
+
+const s=new Date(today);
+
+const [sh,sm]=
+start.value.split(":");
+
+s.setHours(sh,sm,0,0);
+
+let breakMinutes=0;
+
+if(
+breakStart.value &&
+breakEnd.value
+){
+
+const bs=new Date(today);
+const be=new Date(today);
+
+const [bsh,bsm]=
+breakStart.value.split(":");
+
+const [beh,bem]=
+breakEnd.value.split(":");
+
+bs.setHours(bsh,bsm,0,0);
+be.setHours(beh,bem,0,0);
+
+breakMinutes=
+(be-bs)/60000;
+
+}
+
+const finish=
+new Date(
+s.getTime()
++
+(target*3600000)
++
+(breakMinutes*60000)
+);
+
+finishTime.textContent=
+format12(finish);
+
+const now=
+new Date();
+
+let workedMinutes=
+Math.max(
+0,
+(now-s)/60000
+);
+
+workedMinutes-=breakMinutes;
+
+workedMinutes=
+Math.max(
+0,
+Math.round(workedMinutes)
+);
+
+const remaining=
+Math.max(
+0,
+(target*60)-workedMinutes
+);
+
+worked.textContent=
+`${Math.floor(workedMinutes/60)}h ${workedMinutes%60}m`;
+
+break.textContent=
+`${Math.round(breakMinutes)}m`;
+
+remaining.textContent=
+`${Math.floor(remaining/60)}h ${Math.round(remaining%60)}m`;
+
+const progress=
+Math.min(
+100,
+(workedMinutes/(target*60))*100
+);
+
+fill.style.width=
+progress+"%";
+
+progressText.textContent=
+progress.toFixed(0)
++"% Complete";
+
+status.textContent=
+`Started ${format12(s)}`;
+
+calc.innerHTML=
+`
+${format12(s)} start<br>
++ ${target}h target<br>
++ ${Math.round(breakMinutes)}m break<br><br>
+= ${format12(finish)}
+`;
+
+if(progress>=100){
+
+finishTime.textContent=
+"🎉 DONE";
+
+status.textContent=
+"Work day complete";
+
+}
+
+}
+
+load();
+
+if(!hours.value)
+hours.value="7.5";
+
+[
+start,
+breakStart,
+breakEnd,
+hours
+].forEach(
+x=>x.addEventListener(
+"input",
+calculate
+)
+);
+
+calculate();
+
+setInterval(
+calculate,
+30000
+);
+
+</script>
 
 </body>
 </html>
